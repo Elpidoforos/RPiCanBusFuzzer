@@ -2,6 +2,7 @@
 import re
 import hashlib
 import data as data
+#import can
 
 try:
     #Open the kept logfile, if not revert to a default one
@@ -28,8 +29,15 @@ except:
 #Keep all the unique frame ids only
 unique_ids = list(set(all_frame_ids))
 
-print unique_ids
-print len(unique_ids)
+#msg = can.Message(arbitration_id=0x0cf02200, data=[1, 1, 1, 1])
+Z = 'Z'
+arbitration_id= '0x'+ Z
+print arbitration_id
+data=[1, 1, 1, 1]
+print data
+
+#print unique_ids
+#print len(unique_ids)
 
 
 """
