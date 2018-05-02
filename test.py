@@ -22,10 +22,10 @@ def hex_me(a):
 #    x = str(rand.randint(int(minint), int(maxint)))
 
 #count1, count2, count3 = 0
-for a in range(0,14):
-    for b in range(0,14):
-        for c in range(0,14):
-            for d in range(0,14):
+for a in range(0,16):
+    for b in range(0,16):
+        for c in range(0,16):
+            for d in range(0,16):
                 print str(hex_me(a))+str(hex_me(b))+str(hex_me(c))+str(hex_me(d))
 
 
