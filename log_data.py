@@ -1,11 +1,15 @@
 " ---------- Developed by Elpis as part of Master Thesis project elpidoforos@gmail.com ------------------------"
 import re
 import hashlib
-import data as data
-#import can
+import can
+from can import Message
+from time import sleep
 
 #Try to receiver  CAN Frames and keep then in file
 #If no can frames for 5 mins then run the default file against all the possible data packets (8 bytes)
+
+can_int = 'can0'
+bus = can.interface.Bus(can_int,bustype='socketcan')
 
 def main():
     unique_ids = extract_can_frame_ids()
@@ -35,8 +39,12 @@ def can_send(unique_ids):
     (byte0, byte1, byte2, byte3, byte4, byte5, byte6, byte7) = (1, 2, 3, 4, 5, 6, 7, 8)
     data_format = [byte0, byte1, byte2, byte3, byte4, byte5, byte6, byte7]
     for id in unique_ids:
-        arbitration_id_format = '0x' + id
-	msg = can.Message(arbitration_id=arbitration_id_format data=data_format)
+        arbitration_id_format =  int(id,16)
+	print arbitration_id_format
+	msg = can.Message(extended_id=False, arbitration_id=arbitration_id_format, data=data_format)
+#	print msg
+	bus.send(msg)
+	sleep(0.01)
 
 #def can_receive:
 
