@@ -14,7 +14,7 @@ def main():
 def extract_can_frame_ids():
     try:
         # Open the kept logfile, if not revert to a default one
-        with open('logfile2.txt', 'r') as afile:
+        with open('logfile.txt', 'r') as afile:
             logs = afile.readlines()
             all_frame_ids = []
             for line_log in logs:
@@ -32,14 +32,11 @@ def extract_can_frame_ids():
     return unique_ids
 
 def can_send(unique_ids):
-    # msg = can.Message(arbitration_id=0x0cf02200, data=[1, 1, 1, 1])
-    Z = 'Z'
     (byte0, byte1, byte2, byte3, byte4, byte5, byte6, byte7) = (1, 2, 3, 4, 5, 6, 7, 8)
-    arbitration_id = '0x' + Z
-    data = [byte0, byte1, byte2, byte3, byte4, byte5, byte6, byte7]
-    print data
+    data_format = [byte0, byte1, byte2, byte3, byte4, byte5, byte6, byte7]
     for id in unique_ids:
-        arbitration_id = '0x' + id
+        arbitration_id_format = '0x' + id
+	msg = can.Message(arbitration_id=arbitration_id_format data=data_format)
 
 #def can_receive:
 
