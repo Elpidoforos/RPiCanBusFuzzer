@@ -32,6 +32,7 @@ def can_receive():
                 #print(message)
         if message is None:
             print ('Timeout, no message')
+        count = count + 1
 
 def extract_can_frame_ids():
     all_frame_ids = []
