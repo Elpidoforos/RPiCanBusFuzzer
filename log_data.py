@@ -42,7 +42,6 @@ def can_receive():
                     #print count
                 if count > 20:
                         return
-
 def extract_can_frame_ids():
     all_frame_ids = []
     print "Extract CAN Frames....."
@@ -68,15 +67,25 @@ def extract_can_frame_ids():
 
 def can_send(unique_ids):
     print "Sending CAN Frames..."
-    data_format = [random_hex(), random_hex(), random_hex(), random_hex(), random_hex(), random_hex(), random_hex(), random_hex()]
-    for id in unique_ids:
-        arbitration_id_format =  int(id,16)
-        #print arbitration_id_format
-        #print data_format
-        msg = can.Message(extended_id=False, arbitration_id=arbitration_id_format, data=data_format)
-        #print msg
-        bus.send(msg)
-        sleep(0.1)
+    count = 0
+    while(1):
+        for id in unique_ids:
+            data_format = [random_hex(), random_hex(), random_hex(), random_hex(), random_hex(), random_hex(), random_hex(),random_hex()]
+            arbitration_id_format =  int(id,16)
+            #print arbitration_id_format
+            #print data_format
+            msg = can.Message(extended_id=False, arbitration_id=arbitration_id_format, data=data_format)
+            #print msg
+            try:
+                bus.send(msg)
+                sleep(0.1)
+            except:
+                print "Error on CAN Frame trasmission"
+                count += 1
+                if count>20:
+                    exit()
+                else:
+                    continue
 
 #Generate a random data field for the CAN frame
 def random_hex():
