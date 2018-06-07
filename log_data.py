@@ -15,7 +15,6 @@ bus = can.interface.Bus(can_int,bustype='socketcan')
 
 def main():
     can_receive()
-    #Delay 5 seconds
     sleep(5)
     unique_ids = extract_can_frame_ids()
     sleep(5)
@@ -23,18 +22,22 @@ def main():
 
 def can_receive():
     count = 0
+    no_message_count = 0
     print "Receiving CAN Frames...."
     message = bus.recv()
-    print message
+    #print message
     for message in bus:
-	print count
+	#print count
         with open('logfile.txt', 'a') as  afile:
             afile.write(str(message) + '\n')
-            count = count + 1
+            ++count
       	    print count
 	    if count > 20:
                 return
         if message is None:
+            ++no_message_count
+            if no_message_count > 20:
+                return
             print ('Timeout, no message')
 
 def extract_can_frame_ids():
@@ -62,16 +65,13 @@ def extract_can_frame_ids():
 
 def can_send(unique_ids):
     print "Sending CAN Frames..."
-    #(byte0, byte1, byte2, byte3, byte4, byte5, byte6, byte7) = (1, 2, 3, 4, 5, 6, 7, 8)
-    #data_format = [byte0, byte1, byte2, byte3, byte4, byte5, byte6, byte7]
     data_format = [random_hex(), random_hex(), random_hex(), random_hex(), random_hex(), random_hex(), random_hex(), random_hex()]
     for id in unique_ids:
         arbitration_id_format =  int(id,16)
-    #print arbitration_id_format
-    msg = can.Message(extended_id=False, arbitration_id=arbitration_id_format, data=data_format)
-    #print msg
-    bus.send(msg)
-    sleep(0.01)
+        msg = can.Message(extended_id=False, arbitration_id=arbitration_id_format, data=data_format)
+        #print msg
+        bus.send(msg)
+        sleep(0.01)
 
 #Generate a random data field for the CAN frame
 def random_hex():
