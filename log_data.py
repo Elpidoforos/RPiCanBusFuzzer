@@ -30,12 +30,12 @@ def can_receive():
 	#print count
         with open('logfile.txt', 'a') as  afile:
             afile.write(str(message) + '\n')
-            ++count
+            count += 1
       	    print count
 	    if count > 20:
                 return
         if message is None:
-            ++no_message_count
+            no_message_count += 1
             if no_message_count > 20:
                 return
             print ('Timeout, no message')
