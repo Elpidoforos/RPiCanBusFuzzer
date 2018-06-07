@@ -22,20 +22,24 @@ def main():
     can_send(unique_ids)
 
 def can_receive():
-    print "Receiving CAN Frames...."
     count = 0
-    while (count<1000):
-        message = bus.recv()
-        for message in bus:
-            with open('logfile.txt', 'a') as  afile:
-                afile.write(str(message) + '\n')
-                #print(message)
+    print "Receiving CAN Frames...."
+    message = bus.recv()
+    print message
+    for message in bus:
+	print count
+        with open('logfile.txt', 'a') as  afile:
+            afile.write(str(message) + '\n')
+            count = count + 1
+      	    print count
+	    if count > 20:
+                return
         if message is None:
             print ('Timeout, no message')
-        count = count + 1
 
 def extract_can_frame_ids():
     all_frame_ids = []
+    print "Extract CAN Frames....."
     try:
         # Open the kept logfile, if not revert to a default one arbitration_ids
         with open('logfile.txt', 'r') as afile:
