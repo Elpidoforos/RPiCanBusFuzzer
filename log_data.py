@@ -45,7 +45,7 @@ def extract_can_frame_ids():
     print "Extract CAN Frames....."
     try:
         # Open the kept logfile, if not revert to a default one arbitration_ids
-        with open('logfile.txt', 'r') as afile:
+        with open('logfile2.txt', 'r') as afile:
             logs = afile.readlines()
             for line_log in logs:
                 id = re.search(r"(ID: )([0-9a-fA-F]+)", line_log)
@@ -68,14 +68,18 @@ def can_send(unique_ids):
     data_format = [random_hex(), random_hex(), random_hex(), random_hex(), random_hex(), random_hex(), random_hex(), random_hex()]
     for id in unique_ids:
         arbitration_id_format =  int(id,16)
+        #print arbitration_id_format
+        #print data_format
         msg = can.Message(extended_id=False, arbitration_id=arbitration_id_format, data=data_format)
         #print msg
         bus.send(msg)
-        sleep(0.01)
+        sleep(0.1)
 
 #Generate a random data field for the CAN frame
 def random_hex():
-    return ''.join([random.choice('0123456789ABCDEF') for x in range(2)])
+    return random.randint(0,255)
+    #randomhex = ''.join([random.choice('0123456789ABCDEF') for x in range(2)])
+    #return (hex(int(randomhex, 16) + int("0x20", 16)))
 
 if __name__ == "__main__":
     main()
