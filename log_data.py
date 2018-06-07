@@ -45,7 +45,7 @@ def extract_can_frame_ids():
     print "Extract CAN Frames....."
     try:
         # Open the kept logfile, if not revert to a default one arbitration_ids
-        with open('logfile2.txt', 'r') as afile:
+        with open('logfile.txt', 'r') as afile:
             logs = afile.readlines()
             for line_log in logs:
                 id = re.search(r"(ID: )([0-9a-fA-F]+)", line_log)
