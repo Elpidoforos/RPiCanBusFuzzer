@@ -67,7 +67,8 @@ def extract_can_frame_ids():
 
 def can_send(unique_ids):
     print "Sending CAN Frames..."
-    count = 0
+    count_send = 0
+    count_err = 0
     while(1):
         for id in unique_ids:
             data_format = [random_hex(), random_hex(), random_hex(), random_hex(), random_hex(), random_hex(), random_hex(),random_hex()]
@@ -78,12 +79,17 @@ def can_send(unique_ids):
             #print msg
             try:
                 bus.send(msg)
+                count_send += 1
                 sleep(0.1)
+                if count_send > 40:
+                    return
+                else:
+                    continue
             except:
                 print "Error on CAN Frame trasmission"
-                count += 1
-                if count>20:
-                    exit()
+                count_err += 1
+                if count_err>20:
+                    return
                 else:
                     continue
 
