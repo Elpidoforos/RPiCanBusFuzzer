@@ -24,8 +24,13 @@ def can_receive():
     count = 0
     no_message_count = 0
     print "Receiving CAN Frames...."
-    message = bus.recv()
-    #print message
+    message = bus.recv(timeout=2)
+    print message
+    if message is None:
+        no_message_count += 1
+        if no_message_count > 20:
+            return
+        print ('Timeout, no message')
     for message in bus:
 	#print count
         with open('logfile.txt', 'a') as  afile:
@@ -34,11 +39,6 @@ def can_receive():
       	    print count
 	    if count > 20:
                 return
-        if message is None:
-            no_message_count += 1
-            if no_message_count > 20:
-                return
-            print ('Timeout, no message')
 
 def extract_can_frame_ids():
     all_frame_ids = []
