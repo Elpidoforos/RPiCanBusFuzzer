@@ -2,8 +2,8 @@
 import re
 import random
 import hashlib
-#import can
-#from can import Message
+import can
+from can import Message
 from time import sleep
 
 #Try to receiver  CAN Frames and keep then in file
@@ -11,7 +11,7 @@ from time import sleep
 
 #Can interface setup for send and receive
 can_int = 'can0'
-#bus = can.interface.Bus(can_int,bustype='socketcan')
+bus = can.interface.Bus(can_int,bustype='socketcan')
 
 def main():
     print (".........Welcome to the RPiCanBusFuzzer.....")
@@ -46,9 +46,9 @@ def main():
                     can_receive_adv(filename,int(packet_count))
 
         elif menu == "2":
-            print("\n Student Deleted")
+            print("\n Run Function xxxxx")
         elif menu == "3":
-            print("\n Student Record Found")
+            print("\n Run Function xxxxx")
         elif menu == "4":
             print("\n Goodbye....")
             exit()
