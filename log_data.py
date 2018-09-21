@@ -80,12 +80,19 @@ def can_receive():
 
 def can_receive_adv(filename, packet_count):
     count = 0
+    counter = 0
     no_message_count = 0
     print "Receiving CAN Frames.......Please wait.........."
     while(1):
-        message = bus.recv(timeout=2)
-        print ('Timeout, no messages on the bus, please try again...')
-        #print message
+        if counter < 25:
+            message = bus.recv(timeout=5)
+            print ('Timeout, no messages on the bus......')
+            counter = counter + 1
+            #print message
+        elif counter > 25:
+            print ('Timeout, no messages on the bus,check your connection and try again...')
+            exit()
+
         if message is None:
             no_message_count += 1
             if no_message_count > packet_count:
