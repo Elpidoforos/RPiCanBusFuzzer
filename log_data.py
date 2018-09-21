@@ -2,8 +2,8 @@
 import re
 import random
 import hashlib
-import can
-from can import Message
+#import can
+#from can import Message
 from time import sleep
 
 #Try to receiver  CAN Frames and keep then in file
@@ -11,15 +11,49 @@ from time import sleep
 
 #Can interface setup for send and receive
 can_int = 'can0'
-bus = can.interface.Bus(can_int,bustype='socketcan')
+#bus = can.interface.Bus(can_int,bustype='socketcan')
 
 def main():
-    can_receive()
-    sleep(5)
-    unique_ids = extract_can_frame_ids()
-    sleep(5)
-    can_send(unique_ids)
-    #print testing
+    print (".........Welcome to the RPiCanBusFuzzer.....")
+    #can_receive()
+    #sleep(5)
+    #unique_ids = extract_can_frame_ids()
+    #sleep(5)
+    #can_send(unique_ids)
+
+    menu = True
+    filename = True
+    packets = True
+    while menu:
+        print ("""
+        1.Capture CAN Bus traffic
+        2.Capture CAN Bus traffic and extract the Frame IDs
+        3.Capture Traffic and Replay on the CAN Bus, with random data
+        4.Exit/Quit
+        """)
+        menu = raw_input("Select action 1-4:")
+        if menu == "1":
+            filename = raw_input("Enter filename for the CAN Bus log:")
+            packet_count = raw_input("How many packets you would like to capture? (0-1000)")
+            try:
+                int(packet_count)
+            except ValueError:
+                print("\n The number of the packets shall be an integer value! (0-1000)")
+            else:
+                if int(packet_count) > 1200 or int(packet_count) < 0:
+                    print("\n Packet range not valid! (0-1000)")
+                else:
+                    can_receive_adv(filename,int(packet_count))
+
+        elif menu == "2":
+            print("\n Student Deleted")
+        elif menu == "3":
+            print("\n Student Record Found")
+        elif menu == "4":
+            print("\n Goodbye....")
+            exit()
+        elif menu != "":
+            print("\n Not Valid Choice Try again....")
 
 def can_receive():
     count = 0
@@ -43,6 +77,30 @@ def can_receive():
                     #print count
                 if count > 20:
                         return
+
+def can_receive_adv(filename, packet_count):
+    count = 0
+    no_message_count = 0
+    print "Receiving CAN Frames.......Please wait.........."
+    while(1):
+        message = bus.recv(timeout=2)
+        print ('Timeout, no messages on the bus, please try again...')
+        #print message
+        if message is None:
+            no_message_count += 1
+            if no_message_count > packet_count:
+                return
+            continue
+        else:
+            for message in bus:
+                with open(filename, 'a') as afile:
+                    afile.write(str(message) + '\n')
+                    count += 1
+                    continue
+                    #print count
+                if count > packet_count:
+                        return
+
 def extract_can_frame_ids():
     all_frame_ids = []
     print "Extract CAN Frames....."
@@ -65,6 +123,7 @@ def extract_can_frame_ids():
     # Keep all the unique frame ids only
     unique_ids = list(set(all_frame_ids))
     return unique_ids
+
 
 def can_send(unique_ids):
     print "Sending CAN Frames..."
