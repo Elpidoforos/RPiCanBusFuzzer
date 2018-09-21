@@ -34,7 +34,7 @@ def main():
         menu = raw_input("Select action 1-4:")
         if menu == "1":
             filename = raw_input("Enter filename for the CAN Bus log:")
-            packet_count = raw_input("How many packets you would like to capture? (0-1000)")
+            packet_count = raw_input("How many packets you would like to capture? (0-1000):")
             try:
                 int(packet_count)
             except ValueError:
@@ -89,8 +89,9 @@ def can_receive_adv(filename, packet_count):
 
         if message is None:
             no_message_count += 1
-            if no_message_count > 5:
-                return
+            if no_message_count > 20:
+                print ('Timeout occured, please check your connection and try again...')
+                exit()
             continue
         else:
             for message in bus:
