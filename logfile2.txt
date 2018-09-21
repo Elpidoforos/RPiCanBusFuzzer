@@ -1,0 +1,6 @@
+Timestamp: 1525196535.167178        ID: 00f5    S          DLC: 8    ff ff ff ff ff ff ff ff
+Timestamp: 1525196535.167565        ID: 0120    S          DLC: 8    ff ff ff ff ff ff ff ff
+Timestamp: 1525196535.167959        ID: 0130    S          DLC: 8    ff ff ff ff ff ff ff ff
+Timestamp: 1525196535.168347        ID: 0150    S          DLC: 8    80 0f c0 00 00 00 00 00
+Timestamp: 1525196535.168744        ID: 01b0    S          DLC: 8    ff ff ff ff ff ff ff ff
+Timestamp: 1525196535.167959        ID: 0130    S          DLC: 8    ff ff ff 22 ff ff ff ff

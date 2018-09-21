@@ -19,6 +19,7 @@ def main():
     unique_ids = extract_can_frame_ids()
     sleep(5)
     can_send(unique_ids)
+    #print testing
 
 def can_receive():
     count = 0
