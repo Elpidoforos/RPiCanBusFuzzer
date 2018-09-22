@@ -32,7 +32,7 @@ def can_int_check():
     output, error = process.communicate()
     print "The output from ifconfig is: " + str(output)
     #Check if the interface name exists
-    if output == -1:
+    if output == can_int_name +": error fetching interface information: Device not found":
         print("Wrong interface name, please check the CAN Bus interface name.\n")
         can_int_check()
     else:
