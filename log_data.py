@@ -1,4 +1,4 @@
-" ---------- Developed by Elpis as part of Master Thesis project elpidoforos@gmail.com ------------------------"
+#" ---------- Developed by Elpis as part of Master Thesis project elpidoforos@gmail.com ------------------------"
 import re
 import os
 import random
@@ -91,15 +91,16 @@ def menu_call():
 
 def can_receive_adv(filename, packet_count):
     count = 0
-    no_message_count = 0
+    err_msg_recv = 0
     print "Receiving CAN Frame please wait.........."
     while(1):
         message = bus.recv(timeout=2)
-        print message
+        print "The received message is: " + str(message)
 
         if message is None:
-            no_message_count += 1
-            if no_message_count > 20:
+            print ("Timeout, no message on the bus...")
+            err_msg_recv += 1
+            if err_msg_recv > 20:
                 print ('Timeout occured, please check your connection and try again...')
                 exit()
         else:
@@ -107,10 +108,9 @@ def can_receive_adv(filename, packet_count):
                 with open(filename, 'a') as afile:
                     afile.write(str(message) + '\n')
                     count += 1
-                    continue
-                    #print count
                     if count > packet_count:
                        print "Packets have been captured and saved in the filename: " + filename 
+                       exit()
 
 def extract_can_frame_ids():
     all_frame_ids = []
