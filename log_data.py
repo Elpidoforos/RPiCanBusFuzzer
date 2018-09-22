@@ -27,15 +27,14 @@ def main():
 
 def can_int_check():
     can_int_name = raw_input("\nPlease write the CAN Bus Interface name as it appears in ifconfig: ")
-    InfValidation = 'ifconfig ' + can_int_name
-    process = subprocess.Popen(InfValidation.split(), stdout=subprocess.PIPE)
-    output, error = process.communicate()
-    print "The output from ifconfig is: " + str(output)
+    #Return 1 upon error, and 0 upon succes
+    output_canName = subprocess.call("ifconfig",can_int_name)
     #Check if the interface name exists
-    if output == can_int_name +": error fetching interface information: Device not found":
+    if output_canName == 1:
         print("Wrong interface name, please check the CAN Bus interface name.\n")
         can_int_check()
-    else:
+
+    elif output_canName == 0:
         #Check if the interface is up
         bashCommandCanInf = "ip a show " + can_int_name
         process = subprocess.Popen(bashCommandCanInf.split(), stdout=subprocess.PIPE)
@@ -44,6 +43,9 @@ def can_int_check():
         if "DOWN" in output:
             print("The CAN Bus interface is DOWN, please activate it and start the RPiCanBusFuzzer again...")
             exit()
+    else:
+        print ("Something went wrong please restart the application....")
+        exit()
 
 def menu_call():
     menu = True
