@@ -5,6 +5,7 @@ import hashlib
 import can
 from can import Message
 from time import sleep
+import subprocess
 
 #Try to receiver  CAN Frames and keep then in file
 #If no can frames for 5 mins then run the default file against all the possible data packets (8 bytes)
@@ -14,13 +15,31 @@ can_int = 'can0'
 bus = can.interface.Bus(can_int,bustype='socketcan')
 
 def main():
-    print (".........Welcome to the RPiCanBusFuzzer.....")
+    print (".........Welcome to the RPiCanBusFuzzer........")
+    print ("\n If you have any questions please contact elpidoforos@gmail.com")
+    can_int_check()
+    menu_call()
     #can_receive()
     #sleep(5)
     #unique_ids = extract_can_frame_ids()
     #sleep(5)
     #can_send(unique_ids)
 
+def can_int_check():
+    can_int_name = True
+    can_int_name = raw_input("Please write the CAN Bus Interface name as it appears in ifconfig: ")
+    InfValidation = 'ifconfig ' + can_int_name
+    process = subprocess.Popen(InfValidation.split(), stdout=subprocess.PIPE)
+    output, error = process.communicate()
+    print output
+
+    bashCommandCanInf = "ip a show can0"
+    process = subprocess.Popen(bashCommandCanInf.split(), stdout=subprocess.PIPE)
+    output, error = process.communicate()
+    print output
+
+
+def menu_call():
     menu = True
     filename = True
     packets = True
@@ -44,7 +63,6 @@ def main():
                     print("\n Packet range not valid! (0-1000)")
                 else:
                     can_receive_adv(filename,int(packet_count))
-
         elif menu == "2":
             print("\n Run Function xxxxx")
         elif menu == "3":
@@ -55,33 +73,10 @@ def main():
         elif menu != "":
             print("\n Not Valid Choice Try again....")
 
-def can_receive():
-    count = 0
-    no_message_count = 0
-    print "Receiving CAN Frames...."
-    while(1):
-        message = bus.recv(timeout=2)
-        print ('Timeout, no message')
-        #print message
-        if message is None:
-            no_message_count += 1
-            if no_message_count > 20:
-                return
-            continue
-        else:
-            for message in bus:
-                with open('logfile.txt', 'a') as  afile:
-                    afile.write(str(message) + '\n')
-                    count += 1
-                    continue
-                    #print count
-                if count > 20:
-                        return
-
 def can_receive_adv(filename, packet_count):
     count = 0
     no_message_count = 0
-    print "Receiving CAN Frames.......Please wait.........."
+    print "Receiving CAN Frame please wait.........."
     while(1):
         message = bus.recv(timeout=2)
         print ('Timeout, no messages on  the bus......')
