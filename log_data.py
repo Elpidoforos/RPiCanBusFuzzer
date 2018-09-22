@@ -1,5 +1,6 @@
 " ---------- Developed by Elpis as part of Master Thesis project elpidoforos@gmail.com ------------------------"
 import re
+import os
 import random
 import hashlib
 import can
@@ -27,7 +28,7 @@ def main():
 def welcome_screen():
     print ("\n")
     print ("--------------------------------------------------------------")
-    print ("--------------Welcome to the RPiCanBusFuzzer------------------")
+    print ("------------  Welcome to the RPiCanBusFuzzer  ----------------")
     print ("if you have any questions please contact elpidoforos@gmail.com")
     print ("------------------------------------------------------------\n")
 
@@ -35,7 +36,7 @@ def welcome_screen():
 def can_int_check():
     can_int_name = raw_input("Enter the CAN Bus Interface name: ")
     #Return 1 upon error, and 0 upon succes
-    output_canName = subprocess.call(["ifconfig",can_int_name])
+    output_canName = subprocess.call(["ifconfig",can_int_name], stdout=open(os.devnull, 'wb'))
     #Check if the interface name exists
     if output_canName == 1:
         print("Wrong interface name, please check the CAN Bus interface name from ifconfig.\n")
@@ -64,7 +65,7 @@ def menu_call():
         3.Capture Traffic and Replay on the CAN Bus, with random data
         4.Exit/Quit
         """)
-        menu = raw_input("Select action 1-4:")
+        menu = raw_input("Select one of the actions above:")
         if menu == "1":
             filename = raw_input("Enter filename for the CAN Bus log:")
             packet_count = raw_input("How many packets you would like to capture? (0-1000):")
@@ -73,10 +74,11 @@ def menu_call():
             except ValueError:
                 print("\n The number of the packets shall be an integer value! (0-1000)")
             else:
-                if int(packet_count) > 1200 or int(packet_count) < 0:
+                if int(packet_count) > 1000 or int(packet_count) < 0:
                     print("\n Packet range not valid! (0-1000)")
                 else:
                     can_receive_adv(filename,int(packet_count))
+
         elif menu == "2":
             print("\n Run Function xxxxx")
         elif menu == "3":
