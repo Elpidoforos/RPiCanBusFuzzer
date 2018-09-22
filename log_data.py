@@ -15,8 +15,7 @@ can_int = 'can0'
 bus = can.interface.Bus(can_int,bustype='socketcan')
 
 def main():
-    print (".........Welcome to the RPiCanBusFuzzer........")
-    print ("If you have any questions please contact elpidoforos@gmail.com")
+    welcome_screen()
     can_int_check()
     menu_call()
     #can_receive()
@@ -25,13 +24,21 @@ def main():
     #sleep(5)
     #can_send(unique_ids)
 
+def welcome_screen():
+    print ("\n")
+    print ("--------------------------------------------------------------")
+    print ("--------------Welcome to the RPiCanBusFuzzer------------------")
+    print ("if you have any questions please contact elpidoforos@gmail.com")
+    print ("------------------------------------------------------------\n")
+
+#Check the validity of the CAN Bus interface
 def can_int_check():
-    can_int_name = raw_input("\nPlease write the CAN Bus Interface name as it appears in ifconfig: ")
+    can_int_name = raw_input("Enter the CAN Bus Interface name: ")
     #Return 1 upon error, and 0 upon succes
-    output_canName = subprocess.call("ifconfig",can_int_name)
+    output_canName = subprocess.call(["ifconfig",can_int_name])
     #Check if the interface name exists
     if output_canName == 1:
-        print("Wrong interface name, please check the CAN Bus interface name.\n")
+        print("Wrong interface name, please check the CAN Bus interface name from ifconfig.\n")
         can_int_check()
 
     elif output_canName == 0:
@@ -39,7 +46,6 @@ def can_int_check():
         bashCommandCanInf = "ip a show " + can_int_name
         process = subprocess.Popen(bashCommandCanInf.split(), stdout=subprocess.PIPE)
         output, error = process.communicate()
-        print "The output from ip a show is: " + output
         if "DOWN" in output:
             print("The CAN Bus interface is DOWN, please activate it and start the RPiCanBusFuzzer again...")
             exit()
