@@ -1,10 +1,12 @@
-" ---------- Developed by Elpis as part of Master Thesis project elpidoforos@gmail.com ------------------------"
+#" ---------- Developed by Elpis as part of Master Thesis project elpidoforos@gmail.com ------------------------"
 import re
+import os
 import random
 import hashlib
 import can
 from can import Message
 from time import sleep
+import subprocess
 
 #Try to receiver  CAN Frames and keep then in file
 #If no can frames for 5 mins then run the default file against all the possible data packets (8 bytes)
@@ -14,13 +16,45 @@ can_int = 'can0'
 bus = can.interface.Bus(can_int,bustype='socketcan')
 
 def main():
-    print (".........Welcome to the RPiCanBusFuzzer.....")
+    welcome_screen()
+    can_int_check()
+    menu_call()
     #can_receive()
     #sleep(5)
     #unique_ids = extract_can_frame_ids()
     #sleep(5)
     #can_send(unique_ids)
 
+def welcome_screen():
+    print ("\n")
+    print ("--------------------------------------------------------------")
+    print ("------------  Welcome to the RPiCanBusFuzzer  ----------------")
+    print ("if you have any questions please contact elpidoforos@gmail.com")
+    print ("------------------------------------------------------------\n")
+
+#Check the validity of the CAN Bus interface
+def can_int_check():
+    can_int_name = raw_input("Enter the CAN Bus Interface name: ")
+    #Return 1 upon error, and 0 upon succes
+    output_canName = subprocess.call(["ifconfig",can_int_name], stdout=open(os.devnull, 'wb'))
+    #Check if the interface name exists
+    if output_canName == 1:
+        print("Wrong interface name, please check the CAN Bus interface name from ifconfig.\n")
+        can_int_check()
+
+    elif output_canName == 0:
+        #Check if the interface is up
+        bashCommandCanInf = "ip a show " + can_int_name
+        process = subprocess.Popen(bashCommandCanInf.split(), stdout=subprocess.PIPE)
+        output, error = process.communicate()
+        if "DOWN" in output:
+            print("The CAN Bus interface is DOWN, please activate it and start the RPiCanBusFuzzer again...")
+            exit()
+    else:
+        print ("Something went wrong please restart the application....")
+        exit()
+
+def menu_call():
     menu = True
     filename = True
     packets = True
@@ -31,16 +65,16 @@ def main():
         3.Capture Traffic and Replay on the CAN Bus, with random data
         4.Exit/Quit
         """)
-        menu = raw_input("Select action 1-4:")
+        menu = raw_input("Select one of the actions above:")
         if menu == "1":
             filename = raw_input("Enter filename for the CAN Bus log:")
-            packet_count = raw_input("How many packets you would like to capture? (0-1000)")
+            packet_count = raw_input("How many packets you would like to capture? (0-1000):")
             try:
                 int(packet_count)
             except ValueError:
                 print("\n The number of the packets shall be an integer value! (0-1000)")
             else:
-                if int(packet_count) > 1200 or int(packet_count) < 0:
+                if int(packet_count) > 1000 or int(packet_count) < 0:
                     print("\n Packet range not valid! (0-1000)")
                 else:
                     can_receive_adv(filename,int(packet_count))
@@ -55,51 +89,28 @@ def main():
         elif menu != "":
             print("\n Not Valid Choice Try again....")
 
-def can_receive():
-    count = 0
-    no_message_count = 0
-    print "Receiving CAN Frames...."
-    while(1):
-        message = bus.recv(timeout=2)
-        print ('Timeout, no message')
-        #print message
-        if message is None:
-            no_message_count += 1
-            if no_message_count > 20:
-                return
-            continue
-        else:
-            for message in bus:
-                with open('logfile.txt', 'a') as  afile:
-                    afile.write(str(message) + '\n')
-                    count += 1
-                    continue
-                    #print count
-                if count > 20:
-                        return
-
 def can_receive_adv(filename, packet_count):
     count = 0
-    no_message_count = 0
-    print "Receiving CAN Frames.......Please wait.........."
+    err_msg_recv = 0
+    print "Receiving CAN Frame please wait.........."
     while(1):
         message = bus.recv(timeout=2)
-        print ('Timeout, no messages on the bus, please try again...')
-        #print message
+        print "The received message is: " + str(message)
+
         if message is None:
-            no_message_count += 1
-            if no_message_count > packet_count:
-                return
-            continue
+            print ("Timeout, no message on the bus...")
+            err_msg_recv += 1
+            if err_msg_recv > 20:
+                print ('Timeout occured, please check your connection and try again...')
+                exit()
         else:
             for message in bus:
                 with open(filename, 'a') as afile:
                     afile.write(str(message) + '\n')
                     count += 1
-                    continue
-                    #print count
-                if count > packet_count:
-                        return
+                    if count > packet_count:
+                       print "Packets have been captured and saved in the filename: " + filename 
+                       exit()
 
 def extract_can_frame_ids():
     all_frame_ids = []
