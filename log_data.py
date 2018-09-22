@@ -54,10 +54,8 @@ def can_int_check():
         print ("Something went wrong please restart the application....")
         exit()
 
+
 def menu_call():
-    menu = True
-    filename = True
-    packets = True
     while menu:
         print ("""
         1.Capture CAN Bus traffic
@@ -67,20 +65,14 @@ def menu_call():
         """)
         menu = raw_input("Select one of the actions above:")
         if menu == "1":
-            filename = raw_input("Enter filename for the CAN Bus log:")
-            packet_count = raw_input("How many packets you would like to capture? (0-1000):")
-            try:
-                int(packet_count)
-            except ValueError:
-                print("\n The number of the packets shall be an integer value! (0-1000)")
-            else:
-                if int(packet_count) > 1000 or int(packet_count) < 0:
-                    print("\n Packet range not valid! (0-1000)")
-                else:
-                    can_receive_adv(filename,int(packet_count))
-
+            filename = data_filename()
+            packet_count = int(packet_log_count())
+            can_receive_adv(filename, packet_count)
         elif menu == "2":
-            print("\n Run Function xxxxx")
+            filename = data_filename()
+            packet_count = int(packet_log_count())
+            can_receive_adv(filename, packet_count)
+            extract_can_frame_ids(filename)
         elif menu == "3":
             print("\n Run Function xxxxx")
         elif menu == "4":
@@ -96,7 +88,6 @@ def can_receive_adv(filename, packet_count):
     while(1):
         message = bus.recv(timeout=2)
         print "The received message is: " + str(message)
-
         if message is None:
             print ("Timeout, no message on the bus...")
             err_msg_recv += 1
@@ -110,14 +101,15 @@ def can_receive_adv(filename, packet_count):
                     count += 1
                     if count > packet_count:
                        print "Packets have been captured and saved in the filename: " + filename 
-                       exit()
+                       menu_call()
 
-def extract_can_frame_ids():
+def extract_can_frame_ids(filename):
     all_frame_ids = []
-    print "Extract CAN Frames....."
+    filename_id = filename + ".ids.log"
+    print "Extracting CAN Frames arbitration IDs....."
     try:
         # Open the kept logfile, if not revert to a default one arbitration_ids
-        with open('logfile.txt', 'r') as afile:
+        with open(filename_id, 'r') as afile:
             logs = afile.readlines()
             for line_log in logs:
                 id = re.search(r"(ID: )([0-9a-fA-F]+)", line_log)
@@ -126,6 +118,7 @@ def extract_can_frame_ids():
                                  line_log)
                 all_frame_ids.append(id.group(2).lstrip('0'))
     except:
+        print ("There are no valid ids, the default file will be used to send arbitrary data on the bus...")
         #If there were no valid frame ids because of no frames then create a random one and send it on the bus
         with open('arbitration_ids', 'r') as afile:
             logs = afile.readlines()
@@ -134,7 +127,6 @@ def extract_can_frame_ids():
     # Keep all the unique frame ids only
     unique_ids = list(set(all_frame_ids))
     return unique_ids
-
 
 def can_send(unique_ids):
     print "Sending CAN Frames..."
@@ -164,11 +156,25 @@ def can_send(unique_ids):
                 else:
                     continue
 
+def data_filename():
+    filename = raw_input("Enter filename for the CAN Bus log:")
+    return filename
+
+def packet_log_count():
+    packet_count = raw_input("How many packets you would like to capture? (0-1000):")
+    try:
+        int(packet_count)
+    except ValueError:
+        print("\nThe number of the packets shall be an integer value! (0-1000)")
+        filename_packet_count()
+    else:
+        if int(packet_count) > 1000 or int(packet_count) < 0:
+            print("\nPacket range not valid! Acceptable range: 0-1000)")
+    return(packet_count)
+
 #Generate a random data field for the CAN frame
 def random_hex():
     return random.randint(0,255)
-    #randomhex = ''.join([random.choice('0123456789ABCDEF') for x in range(2)])
-    #return (hex(int(randomhex, 16) + int("0x20", 16)))
 
 if __name__ == "__main__":
     main()
