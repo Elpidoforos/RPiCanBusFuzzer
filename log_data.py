@@ -95,15 +95,13 @@ def can_receive_adv(filename, packet_count):
     print "Receiving CAN Frame please wait.........."
     while(1):
         message = bus.recv(timeout=2)
-        print ('Timeout, no messages on  the bus......')
-        #print message
+        print message
 
         if message is None:
             no_message_count += 1
             if no_message_count > 20:
                 print ('Timeout occured, please check your connection and try again...')
                 exit()
-            continue
         else:
             for message in bus:
                 with open(filename, 'a') as afile:
@@ -111,8 +109,8 @@ def can_receive_adv(filename, packet_count):
                     count += 1
                     continue
                     #print count
-                if count > packet_count:
-                        return
+                    if count > packet_count:
+                       print "Packets have been captured and saved in the filename: " + filename 
 
 def extract_can_frame_ids():
     all_frame_ids = []
