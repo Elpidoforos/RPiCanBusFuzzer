@@ -56,8 +56,7 @@ def can_int_check():
 
 
 def menu_call():
-
-    while menu:
+    while(1):
         print ("""
         1.Capture CAN Bus traffic
         2.Capture CAN Bus traffic and extract the Frame IDs
@@ -73,8 +72,6 @@ def menu_call():
             filename = data_filename()
             packet_count = int(packet_log_count())
             can_receive_adv(filename, packet_count, menu)
-            ids = extract_can_frame_ids(filename)
-            print ids
         elif menu == "3":
             print("\n Run Function xxxxx")
         elif menu == "4":
@@ -130,7 +127,10 @@ def extract_can_frame_ids(filename):
                 all_frame_ids.append(random.choice(logs).rstrip())
     # Keep all the unique frame ids only
     unique_ids = list(set(all_frame_ids))
-    return unique_ids
+
+    print ("\nGenerating the " + filename_id + " with all the captured or genrated ids")
+    gen_id_file(filename, all_frame_ids)
+    #return unique_ids
 
 def can_send(unique_ids):
     print "Sending CAN Frames..."
@@ -165,6 +165,7 @@ def gen_random_id_menu(filename):
     random_arbid = raw_input("No packets, captured do you want to use random CAN IDs from a predefined list(11-bits) Y/N? : ")
     if random_arbid == "Y" or random_arbid == "y":
         extract_can_frame_ids(filename)
+        menu_call()
     elif random_arbid == "N" or random_arbid == "n":
         exit()
     else:
@@ -186,6 +187,15 @@ def packet_log_count():
         if int(packet_count) > 1000 or int(packet_count) < 0:
             print("\nPacket range not valid! Acceptable range: 0-1000)")
     return(packet_count)
+
+#Generate a CAN ID log file (only contaning the random or real IDs)
+def gen_id_file(filename,ids):
+    filename_id = filename + ".ids.log"
+    with open(filename_id, 'wb')as idfile:
+        for id in ids:
+            idfile.write(id)
+
+
 
 #Generate a random data field for the CAN frame
 def random_hex():
