@@ -56,8 +56,8 @@ def menu_call():
         1.Capture CAN Bus traffic
         2.Capture CAN Bus traffic and extract the Frame IDs
         3.Capture Traffic and Replay on the CAN Bus with random CAN data
-        4.Replay Traffic from captured/random ID list
-        5.Persistent attack with random data
+        4.Replay Traffic from captured/random ID list (send random data)
+        5.Persistent attack with random data (escape with xxxx)
         6.Exit/Quit
         """)
         menu = raw_input("Select one of the actions above:")
@@ -75,7 +75,9 @@ def menu_call():
             unique_ids = can_receive_adv(filename, packet_count, menu)
             can_send(unique_ids)
         elif menu == "4":
-            print("\n Run Function xxxxx")
+            filename = data_filename()
+            unique_ids = extract_can_frame_ids(filename)
+            can_send(unique_ids)
         elif menu == "5":
             print("\n Run Function xxxxx")
         elif menu == "6":
