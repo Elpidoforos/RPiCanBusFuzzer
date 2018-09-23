@@ -106,13 +106,16 @@ def can_receive_adv(filename, packet_count, menu):
                     afile.write(str(message) + '\n')
                     count += 1
                     if count > packet_count:
-                       print "Packets have been captured and saved in the filename: " + filename 
-                       menu_call()
+                       print "Packets have been captured and saved in the filename: " + filename
+                       if menu == 2:
+                           extract_can_frame_ids(filename)
+                       else:
+                        menu_call()
 
 def extract_can_frame_ids(filename):
     all_frame_ids = []
     filename_id = filename + ".ids.log"
-    print "Extracting CAN arbitration IDs....."
+    #print "Extracting CAN arbitration IDs....."
     try:
         # Open the kept logfile, if not revert to a default one arbitration_ids
         with open(filename, 'r') as afile:
@@ -124,7 +127,7 @@ def extract_can_frame_ids(filename):
                                  line_log)
                 all_frame_ids.append(id.group(2).lstrip('0'))
     except:
-        print ("There are no valid ids, the default file will be used to send arbitrary data on the bus...")
+        #print ("There are no valid ids, the default file...")
         #If there were no valid frame ids because of no frames then create a random one and send it on the bus
         with open('arbitration_ids', 'r') as afile:
             logs = afile.readlines()
@@ -133,7 +136,7 @@ def extract_can_frame_ids(filename):
     # Keep all the unique frame ids only
     unique_ids = list(set(all_frame_ids))
 
-    print ("\nGenerating the " + filename_id + " with all the captured or genrated ids")
+    print ("\nGenerating the " + filename_id + " with all the captured or generated ids")
     gen_id_file(filename, all_frame_ids)
     #return unique_ids
 
@@ -175,7 +178,7 @@ def gen_random_id_menu(filename):
         exit()
     else:
         print ("Only Y/N are accepted.")
-        gen_random_id_menu()
+        gen_random_id_menu(filename)
 
 def data_filename():
     filename = raw_input("Enter filename for the CAN Bus log:")
