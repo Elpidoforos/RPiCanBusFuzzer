@@ -57,7 +57,8 @@ def menu_call():
         2.Capture CAN Bus traffic and extract the Frame IDs
         3.Capture Traffic and Replay on the CAN Bus with random CAN data
         4.Replay Traffic from captured/random ID list
-        5.Exit/Quit
+        5.Persistent attack with random data
+        6.Exit/Quit
         """)
         menu = raw_input("Select one of the actions above:")
         if menu == "1":
@@ -71,11 +72,13 @@ def menu_call():
         elif menu == "3":
             filename = data_filename()
             packet_count = int(packet_log_count())
-            can_receive_adv(filename, packet_count, menu)
-
+            unique_ids = can_receive_adv(filename, packet_count, menu)
+            can_send(unique_ids)
         elif menu == "4":
             print("\n Run Function xxxxx")
         elif menu == "5":
+            print("\n Run Function xxxxx")
+        elif menu == "6":
             print("\n Goodbye....")
             exit()
         elif menu != "":
@@ -100,11 +103,9 @@ def can_receive_adv(filename, packet_count, menu):
                     menu_call()
                 if menu == "3":
                     gen_random_id_menu(filename)
-                    sleep(2)
-                    unique_ids= extract_can_frame_ids(filename)
+                    unique_ids = extract_can_frame_ids(filename)
                     sleep(3)
-                    can_send(unique_ids)
-                    menu_call()
+                    return unique_ids
                 else:
                     exit()
         else:
@@ -120,8 +121,7 @@ def can_receive_adv(filename, packet_count, menu):
                        elif menu == "3":
                            unique_ids = extract_can_frame_ids(filename)
                            sleep(3)
-                           can_send(unique_ids)
-                           menu_call()
+                           return unique_ids
                        else:
                         menu_call()
 
@@ -174,7 +174,7 @@ def can_send(unique_ids):
             except:
                 print "Error on CAN Frame trasmission, please try again..."
                 count_err += 1
-                if count_err>20:
+                if count_err>5:
                     return
                 else:
                     continue
