@@ -98,6 +98,8 @@ def can_receive_adv(filename, packet_count, menu):
                 #In case of timeout for the menu 2 need to know if there is a need to generate random Arbitration IDs
                 if menu == "2":
                     gen_random_id_menu(filename)
+                    extract_can_frame_ids(filename)
+                    menu_call()
                 else:
                     exit()
         else:
@@ -107,8 +109,9 @@ def can_receive_adv(filename, packet_count, menu):
                     count += 1
                     if count > packet_count:
                        print "Packets have been captured and saved in the filename: " + filename
-                       if menu == 2:
+                       if menu == "2":
                            extract_can_frame_ids(filename)
+                           menu_call()
                        else:
                         menu_call()
 
@@ -172,8 +175,9 @@ def can_send(unique_ids):
 def gen_random_id_menu(filename):
     random_arbid = raw_input("No packets, captured do you want to use random CAN IDs from a predefined list(11-bits) Y/N? : ")
     if random_arbid == "Y" or random_arbid == "y":
-        extract_can_frame_ids(filename)
-        menu_call()
+        return
+        #extract_can_frame_ids(filename)
+        #menu_call()
     elif random_arbid == "N" or random_arbid == "n":
         exit()
     else:
