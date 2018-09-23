@@ -54,70 +54,74 @@ def can_int_check():
         print ("Something went wrong please restart the application....")
         exit()
 
+
 def menu_call():
-    menu = True
-    filename = True
-    packets = True
-    while menu:
+    while(1):
         print ("""
         1.Capture CAN Bus traffic
         2.Capture CAN Bus traffic and extract the Frame IDs
-        3.Capture Traffic and Replay on the CAN Bus, with random data
-        4.Exit/Quit
+        3.Capture Traffic and Replay on the CAN Bus with random CAN data
+        4.Replay Traffic from captured/random ID list
+        5.Exit/Quit
         """)
         menu = raw_input("Select one of the actions above:")
         if menu == "1":
-            filename = raw_input("Enter filename for the CAN Bus log:")
-            packet_count = raw_input("How many packets you would like to capture? (0-1000):")
-            try:
-                int(packet_count)
-            except ValueError:
-                print("\n The number of the packets shall be an integer value! (0-1000)")
-            else:
-                if int(packet_count) > 1000 or int(packet_count) < 0:
-                    print("\n Packet range not valid! (0-1000)")
-                else:
-                    can_receive_adv(filename,int(packet_count))
-
+            filename = data_filename()
+            packet_count = int(packet_log_count())
+            can_receive_adv(filename, packet_count, menu)
         elif menu == "2":
-            print("\n Run Function xxxxx")
+            filename = data_filename()
+            packet_count = int(packet_log_count())
+            can_receive_adv(filename, packet_count, menu)
         elif menu == "3":
             print("\n Run Function xxxxx")
         elif menu == "4":
+            print("\n Run Function xxxxx")
+        elif menu == "5":
             print("\n Goodbye....")
             exit()
         elif menu != "":
             print("\n Not Valid Choice Try again....")
 
-def can_receive_adv(filename, packet_count):
+def can_receive_adv(filename, packet_count, menu):
     count = 0
     err_msg_recv = 0
     print "Receiving CAN Frame please wait.........."
     while(1):
         message = bus.recv(timeout=2)
-        print "The received message is: " + str(message)
-
+        #print "The received message is: " + str(message)
         if message is None:
             print ("Timeout, no message on the bus...")
             err_msg_recv += 1
-            if err_msg_recv > 20:
+            if err_msg_recv > 3:
                 print ('Timeout occured, please check your connection and try again...')
-                exit()
+                #In case of timeout for the menu 2 need to know if there is a need to generate random Arbitration IDs
+                if menu == "2":
+                    gen_random_id_menu(filename)
+                    extract_can_frame_ids(filename)
+                    menu_call()
+                else:
+                    exit()
         else:
             for message in bus:
                 with open(filename, 'a') as afile:
                     afile.write(str(message) + '\n')
                     count += 1
                     if count > packet_count:
-                       print "Packets have been captured and saved in the filename: " + filename 
-                       exit()
+                       print "Packets have been captured and saved in the filename: " + filename
+                       if menu == "2":
+                           extract_can_frame_ids(filename)
+                           menu_call()
+                       else:
+                        menu_call()
 
-def extract_can_frame_ids():
+def extract_can_frame_ids(filename):
     all_frame_ids = []
-    print "Extract CAN Frames....."
+    filename_id = filename + ".ids.log"
+    #print "Extracting CAN arbitration IDs....."
     try:
         # Open the kept logfile, if not revert to a default one arbitration_ids
-        with open('logfile.txt', 'r') as afile:
+        with open(filename, 'r') as afile:
             logs = afile.readlines()
             for line_log in logs:
                 id = re.search(r"(ID: )([0-9a-fA-F]+)", line_log)
@@ -126,6 +130,7 @@ def extract_can_frame_ids():
                                  line_log)
                 all_frame_ids.append(id.group(2).lstrip('0'))
     except:
+        #print ("There are no valid ids, the default file...")
         #If there were no valid frame ids because of no frames then create a random one and send it on the bus
         with open('arbitration_ids', 'r') as afile:
             logs = afile.readlines()
@@ -133,8 +138,10 @@ def extract_can_frame_ids():
                 all_frame_ids.append(random.choice(logs).rstrip())
     # Keep all the unique frame ids only
     unique_ids = list(set(all_frame_ids))
-    return unique_ids
 
+    print ("\nGenerating the " + filename_id + " with all the captured or generated ids")
+    gen_id_file(filename, all_frame_ids)
+    #return unique_ids
 
 def can_send(unique_ids):
     print "Sending CAN Frames..."
@@ -164,11 +171,45 @@ def can_send(unique_ids):
                 else:
                     continue
 
+#Menu in order to generate random arbitration IDs in the menu selection 2
+def gen_random_id_menu(filename):
+    random_arbid = raw_input("No packets, captured do you want to use random CAN IDs from a predefined list(11-bits) Y/N? : ")
+    if random_arbid == "Y" or random_arbid == "y":
+        return
+        #extract_can_frame_ids(filename)
+        #menu_call()
+    elif random_arbid == "N" or random_arbid == "n":
+        exit()
+    else:
+        print ("Only Y/N are accepted.")
+        gen_random_id_menu(filename)
+
+def data_filename():
+    filename = raw_input("Enter filename for the CAN Bus log:")
+    return filename
+
+def packet_log_count():
+    packet_count = raw_input("How many packets you would like to capture? (0-1000):")
+    try:
+        int(packet_count)
+    except ValueError:
+        print("\nThe number of the packets shall be an integer value! (0-1000)")
+        packet_log_count()
+    else:
+        if int(packet_count) > 1000 or int(packet_count) < 0:
+            print("\nPacket range not valid! Acceptable range: 0-1000)")
+    return(packet_count)
+
+#Generate a CAN ID log file (only contaning the random or real IDs)
+def gen_id_file(filename,ids):
+    filename_id = filename + ".ids.log"
+    with open(filename_id, 'w')as idfile:
+        for id in ids:
+            idfile.write(id + "\n")
+
 #Generate a random data field for the CAN frame
 def random_hex():
     return random.randint(0,255)
-    #randomhex = ''.join([random.choice('0123456789ABCDEF') for x in range(2)])
-    #return (hex(int(randomhex, 16) + int("0x20", 16)))
 
 if __name__ == "__main__":
     main()
