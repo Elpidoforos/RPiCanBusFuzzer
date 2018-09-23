@@ -60,8 +60,9 @@ def menu_call():
         print ("""
         1.Capture CAN Bus traffic
         2.Capture CAN Bus traffic and extract the Frame IDs
-        3.Capture Traffic and Replay on the CAN Bus, with random data
-        4.Exit/Quit
+        3.Capture Traffic and Replay on the CAN Bus with random CAN data
+        4.Replay Traffic from captured/random ID list
+        5.Exit/Quit
         """)
         menu = raw_input("Select one of the actions above:")
         if menu == "1":
@@ -75,6 +76,8 @@ def menu_call():
         elif menu == "3":
             print("\n Run Function xxxxx")
         elif menu == "4":
+            print("\n Run Function xxxxx")
+        elif menu == "5":
             print("\n Goodbye....")
             exit()
         elif menu != "":
@@ -86,15 +89,17 @@ def can_receive_adv(filename, packet_count, menu):
     print "Receiving CAN Frame please wait.........."
     while(1):
         message = bus.recv(timeout=2)
-        print "The received message is: " + str(message)
+        #print "The received message is: " + str(message)
         if message is None:
             print ("Timeout, no message on the bus...")
             err_msg_recv += 1
-            if err_msg_recv > 20:
+            if err_msg_recv > 3:
                 print ('Timeout occured, please check your connection and try again...')
                 #In case of timeout for the menu 2 need to know if there is a need to generate random Arbitration IDs
-                if menu == 2:
+                if menu == "2":
                     gen_random_id_menu(filename)
+                else:
+                    exit()
         else:
             for message in bus:
                 with open(filename, 'a') as afile:
@@ -191,11 +196,9 @@ def packet_log_count():
 #Generate a CAN ID log file (only contaning the random or real IDs)
 def gen_id_file(filename,ids):
     filename_id = filename + ".ids.log"
-    with open(filename_id, 'wb')as idfile:
+    with open(filename_id, 'w')as idfile:
         for id in ids:
-            idfile.write(id)
-
-
+            idfile.write(id + "\n")
 
 #Generate a random data field for the CAN frame
 def random_hex():
