@@ -7,6 +7,7 @@ import can
 from can import Message
 from time import sleep
 import subprocess
+import msvcrt
 
 #Try to receiver  CAN Frames and keep then in file
 #If no can frames for 5 mins then run the default file against all the possible data packets (8 bytes)
@@ -58,7 +59,7 @@ def menu_call(bus):
         2.Capture CAN Bus traffic and extract the Frame IDs
         3.Capture Traffic and Replay on the CAN Bus with random CAN data
         4.Replay Traffic from captured/random ID list (send random data)
-        5.Persistent attack with random data (escape with xxxx)
+        5.Persistent attack with random captured data (Press esc key to stop)
         6.Restart the CAN Bus Interface
         7.Exit/Quit
         """)
@@ -81,7 +82,13 @@ def menu_call(bus):
             unique_ids = extract_can_frame_ids(filename)
             can_send(unique_ids, bus)
         elif menu == "5":
-            print("\n Run Function xxxxx")
+            filename = data_filename()
+            unique_ids = extract_can_frame_ids(filename)
+            while(1):
+                can_send(unique_ids, bus)
+                if msvcrt.kbhit():
+	                if ord(msvcrt.getch()) == 27:
+	                    break
         elif menu == "6":
             print("\n Run Function xxxxx")
         elif menu == "7":
