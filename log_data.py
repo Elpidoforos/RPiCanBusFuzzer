@@ -106,7 +106,7 @@ def can_receive_adv(filename, packet_count, menu, bus):
                 if menu == "2":
                     gen_random_id_menu(filename)
                     extract_can_frame_ids(filename)
-                    menu_call()
+                    menu_call(bus)
                 if menu == "3":
                     gen_random_id_menu(filename)
                     unique_ids = extract_can_frame_ids(filename)
@@ -123,13 +123,13 @@ def can_receive_adv(filename, packet_count, menu, bus):
                        print "Packets have been captured and saved in the filename: " + filename
                        if menu == "2":
                            extract_can_frame_ids(filename)
-                           menu_call()
+                           menu_call(bus)
                        elif menu == "3":
                            unique_ids = extract_can_frame_ids(filename)
                            sleep(3)
                            return unique_ids
                        else:
-                        menu_call()
+                        menu_call(bus)
 
 def extract_can_frame_ids(filename):
     all_frame_ids = []
@@ -185,8 +185,7 @@ def can_send(unique_ids, bus):
                 else:
                     continue
 
-def restart_can_interface():
-
+#def restart_can_interface():
 
 #Menu in order to generate random arbitration IDs in the menu selection 2
 def gen_random_id_menu(filename):
