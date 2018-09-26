@@ -16,6 +16,7 @@ import subprocess
 #bus = can.interface.Bus(can_int,bustype='socketcan')
 
 def main():
+    bus = ""
     welcome_screen()
     (bus,can_int_name) = can_int_check()
     menu_call(bus,can_int_name)
@@ -29,6 +30,7 @@ def welcome_screen():
 
 #Check the CAN Bus interface
 def can_int_check():
+    bus = ""
     can_int_name = raw_input("Enter the CAN Bus Interface name: ")
     #Return 1 upon error, and 0 upon succes
     output_canName = subprocess.call(["ifconfig",can_int_name], stdout=open(os.devnull, 'wb'))
@@ -194,9 +196,13 @@ def can_send(unique_ids, bus):
 def restart_can_interface(can_int_name):
     print("Restarting the CAN Bus interface.....")
     sleep(1)
-    subprocess.call(["sudo /sbin/ip link set ", can_int_name, " down"], stdout=open(os.devnull, 'wb'))
-    sleep(3)
-    subprocess.call(["sudo /sbin/ip link set ", can_int_name, " up type can bitrate 125000"], stdout=open(os.devnull, 'wb'))
+    bashCommandCanInfDown = "sudo /sbin/ip link set ", can_int_name, " down"
+    process = subprocess.Popen(bashCommandCanInfDown.split(), stdout=subprocess.PIPE)
+    output, error = process.communicate()
+    sleep(2)
+    bashCommandCanInfUp ="sudo /sbin/ip link set ", can_int_name, " up type can bitrate 125000"
+    process = subprocess.Popen(bashCommandCanInfUp.split(), stdout=subprocess.PIPE)
+    output, error = process.communicate()
     sleep(2)
 
 #Menu in order to generate random arbitration IDs in the menu selection 2
