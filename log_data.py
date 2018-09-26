@@ -12,18 +12,13 @@ import subprocess
 #If no can frames for 5 mins then run the default file against all the possible data packets (8 bytes)
 
 #Can interface setup for send and receive
-can_int = 'can0'
-bus = can.interface.Bus(can_int,bustype='socketcan')
+#can_int = 'can0'
+#bus = can.interface.Bus(can_int,bustype='socketcan')
 
 def main():
     welcome_screen()
-    can_int_check()
-    menu_call()
-    #can_receive()
-    #sleep(5)
-    #unique_ids = extract_can_frame_ids()
-    #sleep(5)
-    #can_send(unique_ids)
+    bus = can_int_check()
+    menu_call(bus)
 
 def welcome_screen():
     print ("\n")
@@ -32,7 +27,7 @@ def welcome_screen():
     print ("if you have any questions please contact elpidoforos@gmail.com")
     print ("------------------------------------------------------------\n")
 
-#Check the validity of the CAN Bus interface
+#Check the CAN Bus interface
 def can_int_check():
     can_int_name = raw_input("Enter the CAN Bus Interface name: ")
     #Return 1 upon error, and 0 upon succes
@@ -50,40 +45,55 @@ def can_int_check():
         if "DOWN" in output:
             print("The CAN Bus interface is DOWN, please activate it and start the RPiCanBusFuzzer again...")
             exit()
+        else:
+            bus = can.interface.Bus(can_int_name, bustype='socketcan')
+            return bus
+
     else:
         print ("Something went wrong please restart the application....")
         exit()
 
 
-def menu_call():
+def menu_call(bus):
     while(1):
         print ("""
         1.Capture CAN Bus traffic
         2.Capture CAN Bus traffic and extract the Frame IDs
         3.Capture Traffic and Replay on the CAN Bus with random CAN data
-        4.Replay Traffic from captured/random ID list
-        5.Exit/Quit
+        4.Replay Traffic from captured/random ID list (send random data)
+        5.Persistent attack with random data (escape with xxxx)
+        6.Restart the CAN Bus Interface
+        7.Exit/Quit
         """)
         menu = raw_input("Select one of the actions above:")
         if menu == "1":
             filename = data_filename()
             packet_count = int(packet_log_count())
-            can_receive_adv(filename, packet_count, menu)
+            can_receive_adv(filename, packet_count, menu, bus)
         elif menu == "2":
             filename = data_filename()
             packet_count = int(packet_log_count())
-            can_receive_adv(filename, packet_count, menu)
+            can_receive_adv(filename, packet_count, menu, bus)
         elif menu == "3":
-            print("\n Run Function xxxxx")
+            filename = data_filename()
+            packet_count = int(packet_log_count())
+            unique_ids = can_receive_adv(filename, packet_count, menu, bus)
+            can_send(unique_ids, bus)
         elif menu == "4":
-            print("\n Run Function xxxxx")
+            filename = data_filename()
+            unique_ids = extract_can_frame_ids(filename)
+            can_send(unique_ids, bus)
         elif menu == "5":
+            print("\n Run Function xxxxx")
+        elif menu == "6":
+            print("\n Run Function xxxxx")
+        elif menu == "7":
             print("\n Goodbye....")
             exit()
         elif menu != "":
             print("\n Not Valid Choice Try again....")
 
-def can_receive_adv(filename, packet_count, menu):
+def can_receive_adv(filename, packet_count, menu, bus):
     count = 0
     err_msg_recv = 0
     print "Receiving CAN Frame please wait.........."
@@ -100,6 +110,11 @@ def can_receive_adv(filename, packet_count, menu):
                     gen_random_id_menu(filename)
                     extract_can_frame_ids(filename)
                     menu_call()
+                if menu == "3":
+                    gen_random_id_menu(filename)
+                    unique_ids = extract_can_frame_ids(filename)
+                    sleep(3)
+                    return unique_ids
                 else:
                     exit()
         else:
@@ -112,13 +127,16 @@ def can_receive_adv(filename, packet_count, menu):
                        if menu == "2":
                            extract_can_frame_ids(filename)
                            menu_call()
+                       elif menu == "3":
+                           unique_ids = extract_can_frame_ids(filename)
+                           sleep(3)
+                           return unique_ids
                        else:
                         menu_call()
 
 def extract_can_frame_ids(filename):
     all_frame_ids = []
     filename_id = filename + ".ids.log"
-    #print "Extracting CAN arbitration IDs....."
     try:
         # Open the kept logfile, if not revert to a default one arbitration_ids
         with open(filename, 'r') as afile:
@@ -130,7 +148,6 @@ def extract_can_frame_ids(filename):
                                  line_log)
                 all_frame_ids.append(id.group(2).lstrip('0'))
     except:
-        #print ("There are no valid ids, the default file...")
         #If there were no valid frame ids because of no frames then create a random one and send it on the bus
         with open('arbitration_ids', 'r') as afile:
             logs = afile.readlines()
@@ -141,9 +158,9 @@ def extract_can_frame_ids(filename):
 
     print ("\nGenerating the " + filename_id + " with all the captured or generated ids")
     gen_id_file(filename, all_frame_ids)
-    #return unique_ids
+    return unique_ids
 
-def can_send(unique_ids):
+def can_send(unique_ids, bus):
     print "Sending CAN Frames..."
     count_send = 0
     count_err = 0
@@ -164,20 +181,21 @@ def can_send(unique_ids):
                 else:
                     continue
             except:
-                print "Error on CAN Frame trasmission"
+                print "Error on CAN Frame trasmission, please try again..."
                 count_err += 1
-                if count_err>20:
+                if count_err>5:
                     return
                 else:
                     continue
+
+def restart_can_interface():
+
 
 #Menu in order to generate random arbitration IDs in the menu selection 2
 def gen_random_id_menu(filename):
     random_arbid = raw_input("No packets, captured do you want to use random CAN IDs from a predefined list(11-bits) Y/N? : ")
     if random_arbid == "Y" or random_arbid == "y":
         return
-        #extract_can_frame_ids(filename)
-        #menu_call()
     elif random_arbid == "N" or random_arbid == "n":
         exit()
     else:
@@ -188,6 +206,7 @@ def data_filename():
     filename = raw_input("Enter filename for the CAN Bus log:")
     return filename
 
+#Packet count validator
 def packet_log_count():
     packet_count = raw_input("How many packets you would like to capture? (0-1000):")
     try:
