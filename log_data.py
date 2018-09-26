@@ -42,11 +42,10 @@ def can_int_check():
         bashCommandCanInf = "ip a show " + can_int_name
         process = subprocess.Popen(bashCommandCanInf.split(), stdout=subprocess.PIPE)
         output, error = process.communicate()
+        bus = can.interface.Bus(can_int_name, bustype='socketcan')
         if "DOWN" in output:
             print("The CAN Bus interface is DOWN, please activate it and start the RPiCanBusFuzzer again...")
             exit()
-        else:
-            bus = can.interface.Bus(can_int_name, bustype='socketcan')
     else:
         print ("Something went wrong please restart the application....")
         exit()
