@@ -30,6 +30,7 @@ def welcome_screen():
 #Check the CAN Bus interface
 def can_int_check():
     can_int_name = raw_input("Enter the CAN Bus Interface name: ")
+    bus = can.interface.Bus(can_int_name, bustype='socketcan')
     #Return 1 upon error, and 0 upon succes
     output_canName = subprocess.call(["ifconfig",can_int_name], stdout=open(os.devnull, 'wb'))
     #Check if the interface name exists
@@ -45,14 +46,10 @@ def can_int_check():
         if "DOWN" in output:
             print("The CAN Bus interface is DOWN, please activate it and start the RPiCanBusFuzzer again...")
             exit()
-        else:
-            bus = can.interface.Bus(can_int_name, bustype='socketcan')
-            return bus
-
     else:
         print ("Something went wrong please restart the application....")
         exit()
-
+    return bus
 
 def menu_call(bus):
     while(1):
