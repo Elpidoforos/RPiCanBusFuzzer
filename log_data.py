@@ -59,8 +59,8 @@ def menu_call(bus,can_int_name):
         1.Capture CAN Bus traffic
         2.Capture CAN Bus traffic and extract the Frame IDs
         3.Capture Traffic and Replay on the CAN Bus with random CAN data
-        4.Replay Traffic from captured/random ID list (send random data)
-        5.Persistent attack with random captured data (Press any key)
+        4.Replay Traffic from captured or random ID list (if ID list exist replay, otherwise generate IDs and replay)
+        5.Persistent attack with random data (if ID list exist replay, otherwise generate IDs and replay)
         6.Restart the CAN Bus Interface
         7.Exit/Quit
         """)
@@ -196,11 +196,11 @@ def can_send(unique_ids, bus):
 def restart_can_interface(can_int_name):
     print("Restarting the CAN Bus interface.....")
     sleep(1)
-    bashCommandCanInfDown = "sudo /sbin/ip link set ", can_int_name, " down"
+    bashCommandCanInfDown = "sudo /sbin/ip link set " + can_int_name + " down"
     process = subprocess.Popen(bashCommandCanInfDown.split(), stdout=subprocess.PIPE)
     output, error = process.communicate()
     sleep(2)
-    bashCommandCanInfUp ="sudo /sbin/ip link set ", can_int_name, " up type can bitrate 125000"
+    bashCommandCanInfUp ="sudo /sbin/ip link set " + can_int_name + " up type can bitrate 125000"
     process = subprocess.Popen(bashCommandCanInfUp.split(), stdout=subprocess.PIPE)
     output, error = process.communicate()
     sleep(2)
