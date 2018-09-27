@@ -1,7 +1,7 @@
 # RPiCanBus
 This repository will keep the scripts which are developed for the purspose of the Elpidoforos Arapantonis MSc thesis in Information Security programe in Luleå University of Technology. The developement board which the thesis is based upon is a Rarpberry Pi with a PICAN2 module. 
 
-log_data.py : will run on the background upon start up and wait for input from a CAN Bus network. When a good amount of data are gathered then some packets will be alternated and refeed back to the bus in order to confuse/fuzz the receiving node.
+log_data.py : The user will be prompted with the options, which can be found below. The main idea is other to be able to gather and save data or to gather data, which will be alternated and refeed back to the bus in order to confuse/fuzz the receiving node.
 
 There are 7 option which can be used:
         1.Capture CAN Bus traffic,
