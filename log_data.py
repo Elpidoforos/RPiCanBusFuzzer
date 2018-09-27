@@ -21,6 +21,7 @@ def main():
     (bus,can_int_name) = can_int_check()
     menu_call(bus,can_int_name)
 
+
 def welcome_screen():
     print ("\n")
     print ("--------------------------------------------------------------")
@@ -48,6 +49,10 @@ def can_int_check():
         if "DOWN" in output:
             print("The CAN Bus interface is DOWN, please activate it and start the RPiCanBusFuzzer again...")
             exit()
+        else:
+            bus = can.interface.Bus(can_int_name, bustype='socketcan')
+            return bus
+
     else:
         print ("Something went wrong please restart the application....")
         exit()
@@ -92,6 +97,7 @@ def menu_call(bus,can_int_name):
                 pass  # do cleanup here
         elif menu == "6":
             restart_can_interface(can_int_name)
+
         elif menu == "7":
             print("\n Goodbye....")
             exit()
@@ -115,6 +121,7 @@ def can_receive_adv(filename, packet_count, menu, bus, can_int_name):
                     gen_random_id_menu(filename)
                     extract_can_frame_ids(filename)
                     menu_call(bus, can_int_name)
+
                 if menu == "3":
                     gen_random_id_menu(filename)
                     unique_ids = extract_can_frame_ids(filename)
@@ -132,6 +139,7 @@ def can_receive_adv(filename, packet_count, menu, bus, can_int_name):
                        if menu == "2":
                            extract_can_frame_ids(filename)
                            menu_call(bus, can_int_name)
+
                        elif menu == "3":
                            unique_ids = extract_can_frame_ids(filename)
                            sleep(3)
@@ -204,6 +212,7 @@ def restart_can_interface(can_int_name):
     process = subprocess.Popen(bashCommandCanInfUp.split(), stdout=subprocess.PIPE)
     output, error = process.communicate()
     sleep(2)
+
 
 #Menu in order to generate random arbitration IDs in the menu selection 2
 def gen_random_id_menu(filename):
