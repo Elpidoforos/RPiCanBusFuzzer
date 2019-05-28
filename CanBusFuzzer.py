@@ -3,55 +3,44 @@ from SupportFuncCalls import *
 from can import Message
 from InfCheck import *
 import argparse
+from CanSendReceive import *
 
 def main():
+    #Parse the arguments
     args = parse_arguments()
-
     welcome_screen()
     #Instanciate the Support Functions Class
     supp_func = SupportFuncCalls()
     inf_chk = InfCheck()
+    can_send_receive = CanSendReceive()
 
     #Get interface name
     inf_name = args.inf
+
     #Check that the CAN Interface it is up
     bus_obj = inf_chk.inf_status(inf_name)
 
-    '''
-    help = sys.argv[1]
-    if help == "--help":
-        print("This will be a help menu!!")
-    else:
-        try:
-            #Add interface name for data capturing
-            #(inf_name,inf_opr) = (0,None) # Default Values
-            inf_opr = sys.argv[1]
-            inf_name =sys.argv[2]
-        except (NameError,IndexError):
-            print("ERROR: You shall provide an interface name. For help type CanBusFuzzer.py --help")
-        try:
-            #This argument will be used either to replay or save traffic.
-            save_replay = sys.argv[3]
-            log_file_name_save_replay = sys.argv[4]
-            #Save Log file
-            if save_replay == '-s':
-                save_file_name = log_file_name_save_replay
-            elif save_replay == '-r':
-                replay_file_name = log_file_name_save_replay
-            elif save_replay == '-sr':
-                save_replay_file_name = log_file_name_save_replay
-        except (NameError,IndexError):
-            print("ERROR: You shall provide a file name")
-'''
-
+    #Save Replay of Save and Replay option
+    if args.save:
+        print("Save Menu")
+        file_name = args.save
+        can_send_receive.can_rcv(file_name,bus_obj)
+    elif args.replay:
+        print("Replay")
+        file_name = args.replay
+    elif args.save_replay:
+        print("Save Replay")
+        file_name = args.save_replay
 
 def parse_arguments():
     parser = argparse.ArgumentParser()
     #Adding Arguments
     parser.add_argument("--inf_name","-i",dest="inf", help="Add the needed CAN Bus Interface", type=str, required=True)
-    parser.add_argument("--save_log","-s",dest="save", help="Capture the traffic and save it in a file", type=str, required=False)
-    parser.add_argument("--replay_log","-r", dest="replay",help="Replay the traffic from a file", type=str, required=False)
-    parser.add_argument("--save_replay_log","-sr", dest="save_replay",help="Capture the traffic and replay it with random data", type=str, required=False)
+    #Only one of the arguments shall be accepted
+    save_or_replay = parser.add_mutually_exclusive_group()
+    save_or_replay.add_argument("--save_log","-s",dest="save", help="Capture the traffic and save it in a file", type=str, required=False)
+    save_or_replay.add_argument("--replay_log","-r", dest="replay",help="Replay the traffic from a file", type=str, required=False)
+    save_or_replay.add_argument("--save_replay_log","-sr", dest="save_replay",help="Capture the traffic and replay it with random data", type=str, required=False)
     return parser.parse_args()
 
 
