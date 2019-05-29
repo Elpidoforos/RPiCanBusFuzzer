@@ -26,6 +26,7 @@ def main():
         print("Save Menu")
         file_name = args.save
         can_send_receive.can_rcv(file_name, bus_obj)
+	sys.exit()
     elif args.replay:
         print("Replay Menu")
         file_name = args.replay

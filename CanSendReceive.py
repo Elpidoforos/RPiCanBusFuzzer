@@ -23,7 +23,7 @@ class CanSendReceive:
                 if err_msg_recv > 3:
                     print(
                         'ERROR: Connection timeout occured, please check your connection and try again.')
-                    exit()
+                    sys.exit()
             else:
                 for message in bus_obj:
                     with open(file_name, 'a') as afile:
@@ -32,7 +32,7 @@ class CanSendReceive:
                         if count > packet_count:
                             print(
                                 str(packet_count) + " CAN Frames have been captured and saved in the: " + file_name)
-                            exit()
+                            return
 
     # Replay CAN traffic from an existing log file
     def can_replay(self, file_name, bus_obj):
@@ -59,15 +59,15 @@ class CanSendReceive:
                 # print data_format
                 msg = can.Message(
                     extended_id=False, arbitration_id=arbitration_id_format, data=data_format)
-                # print msg
+                #print msg
                 try:
                     bus_obj.send(msg)
-                    cnt_send += 1
-                    sleep(0.1)
-                    if cnt_send > 40:
-                        return
-                    else:
-                        continue
+                   # cnt_send += 1
+                    time.sleep(0.2)
+                   # if cnt_send > 40:
+                   #     return
+                   # else:
+                   #     continue
                 except:
                     print("ERROR: CAN Frame trasmission timeout, please try again...")
                     cnt_err += 1
