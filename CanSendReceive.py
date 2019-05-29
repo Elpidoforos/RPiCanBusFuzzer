@@ -1,4 +1,5 @@
 import os
+import sys
 import subprocess
 import can
 from can import Message
@@ -71,6 +72,4 @@ class CanSendReceive:
                     print("ERROR: CAN Frame trasmission timeout, please try again...")
                     cnt_err += 1
                     if cnt_err > 5:
-                        return
-                    else:
-                        continue
+                        sys.exit()

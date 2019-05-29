@@ -4,6 +4,7 @@ import can
 from can import Message
 import random
 import sys
+import re
 
 class SupportFuncCalls:
 
