@@ -1,5 +1,5 @@
 # RPiCanBus
-This repository will keep the scripts which are developed for the purspose of the Elpidoforos Arapantonis MSc thesis in Information Security programe in Luleå University of Technology. The developement board which the thesis is based on a RarpberryPi with a PICAN2 module. 
+This repository will keep the scripts which are developed for the purspose of the a MSc thesis in Information Security programe in Luleå University of Technology. The developement board is a RarpberryPi with a PICAN2 module. 
 
 In CanBusFuzzer.py the arguments which can be used are:
         -i   : Can intereface
