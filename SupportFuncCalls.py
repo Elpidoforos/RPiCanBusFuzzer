@@ -3,6 +3,7 @@ import subprocess
 import can
 from can import Message
 import random
+import sys
 
 class SupportFuncCalls:
 
@@ -22,6 +23,7 @@ class SupportFuncCalls:
                     all_frame_ids.append(id.group(2).lstrip('0'))
         except:
             print("ERROR: Cannot load the CAN log file.")
+            sys.exit()
 
         # Keep all the unique frame ids only
         unique_ids = list(set(all_frame_ids))

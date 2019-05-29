@@ -30,18 +30,15 @@ class CanSendReceive:
                         count += 1
                         if count > packet_count:
                             print(
-                               str(packet_count) + " CAN Frames have been captured and saved in the: " + file_name)
-			    exit()
+                                str(packet_count) + " CAN Frames have been captured and saved in the: " + file_name)
+                            exit()
 
-    #Replay CAN traffic from an existing log file
+    # Replay CAN traffic from an existing log file
     def can_replay(self, file_name, bus_obj):
-        try:
-            frame_ids = self.supp_func.extract_can_frame_ids(file_name)
-        except:
-            print("ERROR: Cannot load the CAN log file.")
+        frame_ids = self.supp_func.extract_can_frame_ids(file_name)
         self.can_send(frame_ids, bus_obj)
 
-    #Generate random CAN Frame IDs and replay
+    # Generate random CAN Frame IDs and replay
     def can_replay_random(self, file_name, bus_obj):
         try:
             frame_ids = self.supp_func.gen_random_ids(file_name)
