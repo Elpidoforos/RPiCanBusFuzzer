@@ -30,7 +30,8 @@ class CanSendReceive:
                         count += 1
                         if count > packet_count:
                             print(
-                                packet_count + " CAN Frames have been captured and saved in the: " + file_name)
+                               str(packet_count) + " CAN Frames have been captured and saved in the: " + file_name)
+			    exit()
 
     #Replay CAN traffic from an existing log file
     def can_replay(self, file_name, bus_obj):
