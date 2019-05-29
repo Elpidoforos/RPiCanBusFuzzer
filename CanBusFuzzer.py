@@ -1,9 +1,9 @@
 import sys
+import argparse
 from SupportFuncCalls import *
-from CanSendReceive import *
+from SendReceiveFrames import *
 from can import Message
 from InfCheck import *
-import argparse
 
 
 def main():
@@ -13,7 +13,7 @@ def main():
     # Instanciate the Support Functions Class
     supp_func = SupportFuncCalls()
     inf_chk = InfCheck()
-    can_send_receive = CanSendReceive()
+    can_send_receive = SendReceiveFrames()
 
     # Get interface name
     inf_name = args.inf
@@ -26,7 +26,7 @@ def main():
         print("Save Menu")
         file_name = args.save
         can_send_receive.can_rcv(file_name, bus_obj)
-	sys.exit()
+        sys.exit()
     elif args.replay:
         print("Replay Menu")
         file_name = args.replay
@@ -38,7 +38,7 @@ def main():
         can_send_receive.can_replay(file_name, bus_obj)
     elif args.rand_id:
         print("Random ID reply")
-	file_name = args.rand_id
+        file_name = args.rand_id
         can_send_receive.can_replay_random(file_name, bus_obj)
 
 
@@ -56,15 +56,16 @@ def parse_arguments():
     save_or_replay.add_argument("--save_replay_log", "-sr", dest="save_replay",
                                 help="Capture CAN traffic and replay on the bus", type=str, required=False)
     save_or_replay.add_argument("--random_id", "-rid", dest="rand_id",
-                                help="Generate random CAN Frame ids and replay on the bus", type=str, required=False)                            
+                                help="Generate random CAN Frame ids and replay on the bus", type=str, required=False)
     return parser.parse_args()
 
-# Welcome screen during the script initialization
+
 def welcome_screen():
     print("\n" + "---------------------------------------------------------------"
           + "\n" + "-------------  Welcome to the RPiCanBusFuzzer  ----------------"
           + "\n" + "if you have any questions please contact elpidoforos@gmail.com"
           + "\n" + "---------------------------------------------------------------\n")
+
 
 if __name__ == "__main__":
     main()

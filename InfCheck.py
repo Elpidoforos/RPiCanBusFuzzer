@@ -1,8 +1,9 @@
 import can
-from can import Message
-from time import sleep
 import subprocess
 import os
+from can import Message
+from time import sleep
+
 
 
 class InfCheck:

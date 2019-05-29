@@ -2,12 +2,12 @@ import os
 import sys
 import subprocess
 import can
+import time
 from can import Message
 from SupportFuncCalls import *
-import time
 
 
-class CanSendReceive:
+class SendReceiveFrames:
     supp_func = SupportFuncCalls()
 
     # Receive CAN traffic and save it to file
@@ -55,19 +55,11 @@ class CanSendReceive:
                 data_format = [self.supp_func.random_hex(), self.supp_func.random_hex(), self.supp_func.random_hex(), self.supp_func.random_hex(
                 ), self.supp_func.random_hex(), self.supp_func.random_hex(), self.supp_func.random_hex(), self.supp_func.random_hex()]
                 arbitration_id_format = int(id, 16)
-                # print arbitration_id_format
-                # print data_format
                 msg = can.Message(
                     extended_id=False, arbitration_id=arbitration_id_format, data=data_format)
-                #print msg
                 try:
                     bus_obj.send(msg)
-                   # cnt_send += 1
                     time.sleep(0.2)
-                   # if cnt_send > 40:
-                   #     return
-                   # else:
-                   #     continue
                 except:
                     print("ERROR: CAN Frame trasmission timeout, please try again...")
                     cnt_err += 1

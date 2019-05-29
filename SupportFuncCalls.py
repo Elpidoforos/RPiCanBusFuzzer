@@ -1,10 +1,11 @@
 import os
 import subprocess
 import can
-from can import Message
 import random
 import sys
 import re
+from can import Message
+
 
 class SupportFuncCalls:
 
@@ -34,13 +35,13 @@ class SupportFuncCalls:
         self.gen_id_file(file_name, all_frame_ids)
         return unique_ids
 
-    #Generate Random Frame ID file
+    # Generate Random Frame ID file
     def gen_random_ids(self, file_name):
         all_frame_ids = []
         # If there were no valid frame ids because of no frames then create a random one and send it on the bus
         with open('arbitration_ids', 'r') as afile:
             logs = afile.readlines()
-            #TODO: Give the number with how many random ids! 
+            # TODO: Give the number with how many random ids!
             for i in range(0, 50):
                 all_frame_ids.append(random.choice(logs).rstrip())
         # Keep all the unique frame ids only
