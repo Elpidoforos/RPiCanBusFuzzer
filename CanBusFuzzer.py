@@ -37,6 +37,7 @@ def main():
         can_send_receive.can_replay(file_name, bus_obj)
     elif args.rand_id:
         print("Random ID reply")
+	file_name = args.rand_id
         can_send_receive.can_replay_random(file_name, bus_obj)
 
 
